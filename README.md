@@ -26,7 +26,6 @@ A RESTful API for managing products and user authentication using **Node.js**, *
 
 ### 1. Clone the repository
 
-```bash
 git clone https://github.com/EmmanuelEmp/product-store-api.git
 cd product-store-api
 
@@ -47,6 +46,5 @@ docker-compose up --build
 👨‍💻 Author
 Your Ochogwu Emmanuel
 GitHub: @EmmanuelEmp
-LinkedIn: https://www.linkedin.com/in/emmanuel-ochogwu
 [LinkedIn:](https://www.linkedin.com/in/emmanuel-ochogwu)
 
