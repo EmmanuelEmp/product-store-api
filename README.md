@@ -41,10 +41,11 @@ npm start          # Runs compiled app from build/
 docker-compose up --build
 
 # For best test practices
-[Read:](https://github.com/goldbergyoni/javascript-testing-best-practices)
+Read: https://github.com/goldbergyoni/javascript-testing-best-practices
 
 👨‍💻 Author
-Your Ochogwu Emmanuel
+---
+Name: Ochogwu Emmanuel
 GitHub: @EmmanuelEmp
-[LinkedIn:](https://www.linkedin.com/in/emmanuel-ochogwu)
+LinkedIn: https://www.linkedin.com/in/emmanuel-ochogwu
 
