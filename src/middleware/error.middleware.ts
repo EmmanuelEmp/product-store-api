@@ -1,12 +1,29 @@
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 
-import { Express, Response, Request, NextFunction} from "express"
-import { logger } from "../utils/logger";
+/**
+ * Global error handler middleware.
+ * Catches and responds with standardized error format.
+ */
+export const errorHandler = (
+  error: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const statusCode = error.status || 500;
+  const message = error.message || 'Internal Server Error';
 
-export const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
-  const status = error.status || 500;
-  const message = error.message || 'Internal server error';
-  logger.error(error.status, error.message); // Log the error details
-  console.error(`ErrorHandler: ${message} (Status: ${status})`); // Debug log
-  res.status(status).json({ message });
+  // Log error using custom logger
+  logger.error(`Error ${statusCode} - ${message}`);
+  
+  // Log stack trace in development for deeper debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.error(error.stack);
+  }
+
+  res.status(statusCode).json({
+    success: false,
+    error: message,
+  });
 };
-

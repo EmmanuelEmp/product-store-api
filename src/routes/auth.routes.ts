@@ -7,11 +7,19 @@ import { validateToken } from '../middleware/auth.middleware';
 const router = Router();
 const authController = new AuthController();
 
-// 👇 This validates the request body BEFORE calling controller
+// Register a new user
 router.post('/register', validate(registerSchema), authController.register);
+
+// Login user and return tokens
 router.post('/login', validate(loginSchema), authController.login);
-router.get('/profile', validateToken, authController.getProfile); 
+
+// Get authenticated user's profile
+router.get('/profile', validateToken, authController.getProfile);
+
+// Logout by deleting refresh token
 router.post('/logout', authController.logout);
+
+// Refresh tokens using a valid refresh token
 router.post('/refresh-token', authController.refreshToken);
 
 export default router;

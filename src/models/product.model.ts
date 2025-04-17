@@ -1,3 +1,4 @@
+// This file defines the Product model for the application.
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IProduct extends Document {

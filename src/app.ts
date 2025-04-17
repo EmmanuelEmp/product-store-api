@@ -4,9 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth.routes';
+import productRoutes from './routes/product.routes';
 import { errorHandler } from './middleware/error.middleware';
 import { logger } from './utils/logger';
-import productRoutes from './routes/product.routes';
 
 class App {
   public app: Application;
@@ -19,26 +19,26 @@ class App {
   }
 
   private setMiddleware() {
-    // Rate Limiter
+    // Global rate limiter (can scope to /api/auth if needed)
     const limiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
+      windowMs: 15 * 60 * 1000,
+      max: 100,
       message: 'Too many requests from this IP, please try again later.',
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+      standardHeaders: true,
+      legacyHeaders: false,
     });
 
-    this.app.use(limiter); // Apply rate limiter to all requests
-
+    this.app.use(limiter);
     this.app.use(cors());
     this.app.use(helmet());
     this.app.use(morgan('dev'));
     this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
   }
 
   private setRoutes() {
     this.app.get('/', (req, res) => {
-      res.send('Welcome to the API!');
+      res.json({ message: 'Welcome to the API!' });
     });
 
     this.app.use('/api/auth', authRoutes);
@@ -46,9 +46,14 @@ class App {
   }
 
   private setErrorHandling() {
+    // Handle unknown routes
+    this.app.use((req, res) => {
+      res.status(404).json({ message: 'Route not found' });
+    });
+
+    // Central error handler
     this.app.use(errorHandler);
   }
 }
 
 export default new App().app;
-

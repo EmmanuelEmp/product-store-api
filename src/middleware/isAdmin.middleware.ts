@@ -1,4 +1,5 @@
-// src/middleware/isAdmin.middleware.ts
+
+//Middleware to check if the user has admin privileges
 import { Request, Response, NextFunction } from 'express';
 
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {

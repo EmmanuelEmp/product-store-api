@@ -1,4 +1,4 @@
-import { ref } from "joi";
+// contents: refreshToken model
 import mongoose from "mongoose";
 
 export interface RefreshTokenDocument extends mongoose.Document {

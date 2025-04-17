@@ -1,3 +1,6 @@
+
+
+// This file contains the validation schemas for user registration and login using Joi
 import Joi from 'joi';
 
 export const registerSchema = Joi.object({

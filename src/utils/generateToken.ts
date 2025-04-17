@@ -11,9 +11,13 @@ interface TokenUser {
   role: Role;
 }
 
+interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
-export const generateToken = async (user: TokenUser) => {
-  if  (!user || !user._id || !user.name || !user.email) {
+export const generateToken = async (user: TokenUser): Promise<Tokens> => {
+  if (!user || !user._id || !user.name || !user.email) {
     throw new Error("Invalid user data for token generation");
   }
 
@@ -21,20 +25,19 @@ export const generateToken = async (user: TokenUser) => {
     id: user._id.toString(),
     name: user.name,
     email: user.email,
-    role: user.role
+    role: user.role,
   };
 
   const accessToken = sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: "10m", //
+    expiresIn: "10m",
   });
 
   const refreshToken = crypto.randomBytes(32).toString("hex");
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 7); // expires in 7 days
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
 
   await RefreshToken.create({
     token: refreshToken,
-    user: user._id.toString(), 
+    user: user._id,
     expiresAt,
   });
 

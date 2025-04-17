@@ -8,15 +8,19 @@ import RefreshToken from '../models/refreshToken.model';
 const authService = new AuthService();
 
 export class AuthController {
+  // Handles user registration
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.body.name || !req.body.email || !req.body.password) {
+      const { name, email, password } = req.body;
+
+      if (!name || !email || !password) {
         const error = new Error('Name, email, and password are required');
         (error as any).status = 400;
         throw error;
       }
 
-      const user = await authService.register(req.body) as IUser;
+      const user = await authService.register({ name, email, password }) as IUser;
+
       if (!user || !user._id) {
         const error = new Error('Failed to create user');
         (error as any).status = 500;
@@ -32,26 +36,34 @@ export class AuthController {
 
       res.status(201).json({
         message: 'Registration successful',
-        data: { user: { id: user._id, email: user.email }, accessToken, refreshToken },
+        data: {
+          user: {
+            id: user._id,
+            email: user.email,
+          },
+          accessToken,
+          refreshToken,
+        },
       });
     } catch (error) {
-      console.log('Register controller error:', error);
       logger.error(`Register controller error: ${(error as Error).message}`);
       next(error);
     }
   }
 
+  // Handles user login
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('Login controller called with body:', req.body); 
-      if (!req.body.email || !req.body.password) {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
         const error = new Error('Email and password are required');
         (error as any).status = 400;
         throw error;
       }
 
-      const tokens = await authService.login(req.body.email, req.body.password);
-      console.log('Login: Tokens received:', tokens); 
+      const tokens = await authService.login(email, password);
+
       if (!tokens) {
         const error = new Error('Login failed');
         (error as any).status = 500;
@@ -60,15 +72,15 @@ export class AuthController {
 
       res.status(200).json({
         message: 'Login successful',
-        data: { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken },
+        data: tokens,
       });
     } catch (error) {
-      console.log('Login controller error:', error); 
       logger.error(`Login controller error: ${(error as Error).message}`);
       next(error);
     }
   }
 
+  // Fetches the current user's profile
   async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
@@ -76,24 +88,26 @@ export class AuthController {
         (error as any).status = 400;
         throw error;
       }
+
       const user = await authService.getUserById(req.user.userId);
-      // console.log('GetProfile: User retrieved:', user); 
+
       if (!user) {
         const error = new Error('User not found');
         (error as any).status = 404;
         throw error;
       }
+
       res.status(200).json({
         message: 'User profile retrieved successfully',
         data: { user },
       });
     } catch (error) {
-      // console.log('GetProfile controller error:', error); // Debug log
       logger.error(`Get profile error: ${(error as Error).message}`);
       next(error);
     }
   }
 
+  // Handles user logout by removing refresh token
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.body;
@@ -116,33 +130,32 @@ export class AuthController {
 
       res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      console.log('Logout controller error:', error);
       logger.error(`Logout controller error: ${(error as Error).message}`);
       next(error);
     }
   }
 
+  // Refreshes JWT tokens using a valid refresh token
   async refreshToken(req: Request, res: Response, next: NextFunction) {
     try {
       const { refreshToken } = req.body;
+
       if (!refreshToken) {
-        logger.error('Refresh token required');
         const error = new Error('Refresh token required');
         (error as any).status = 400;
         throw error;
       }
 
-      const tokens = await authService.refreshToken(refreshToken)
+      const tokens = await authService.refreshToken(refreshToken);
+
       if (!tokens) {
-        logger.error('Invalid refresh token');
         const error = new Error('Invalid refresh token');
         (error as any).status = 401;
         throw error;
       }
-      logger.info('Token refreshed successfully');
+
       res.status(200).json({ message: 'Token refreshed', data: tokens });
     } catch (error) {
-      console.log('RefreshToken controller error:', error);
       logger.error(`Refresh token error: ${(error as Error).message}`);
       next(error);
     }

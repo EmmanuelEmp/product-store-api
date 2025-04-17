@@ -1,9 +1,11 @@
 // src/controllers/product.controller.ts
+
 import { Request, Response, NextFunction } from 'express';
 import productService from '../services/product.service';
 import mongoose from 'mongoose';
 
 export class ProductController {
+  // Create a new product
   async createProduct(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) {
@@ -24,23 +26,32 @@ export class ProductController {
     }
   }
 
+  // Get all products
   async getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
       const products = await productService.getAllProducts();
-      res.status(200).json({ success: true, count: products.length, data: products });
+      res.status(200).json({
+        success: true,
+        count: products.length,
+        data: products,
+      });
     } catch (error) {
       next(error);
     }
   }
 
+  // Get a single product by ID
   async getProductById(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      const { id } = req.params;
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
         res.status(400).json({ success: false, message: 'Invalid product ID' });
         return;
       }
 
-      const product = await productService.getProductById(req.params.id);
+      const product = await productService.getProductById(id);
+
       if (!product) {
         res.status(404).json({ success: false, message: 'Product not found' });
         return;
@@ -52,13 +63,21 @@ export class ProductController {
     }
   }
 
+  // Update a product
   async updateProduct(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.userId;
+      const userRole = req.user?.role || 'user';
+
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
       const updatedProduct = await productService.updateProduct(
         req.params.id,
         req.body,
-        req.user?.userId || (() => { throw new Error('User ID is required'); })(),
-        req.user?.role
+        userId,
+        userRole
       );
 
       if (!updatedProduct) {
@@ -72,20 +91,33 @@ export class ProductController {
         res.status(403).json({ success: false, message: error.message });
         return;
       }
-      if (error.name === 'ValidationError' || error.message.includes('Cast to')) {
+
+      if (
+        error.name === 'ValidationError' ||
+        error.message.includes('Cast to')
+      ) {
         res.status(400).json({ success: false, message: 'Invalid data provided' });
         return;
       }
+
       next(error);
     }
   }
 
+  // Delete a product
   async deleteProduct(req: Request, res: Response, next: NextFunction) {
     try {
+      const userId = req.user?.userId;
+      const userRole = req.user?.role || 'user';
+
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
       const deleted = await productService.deleteProduct(
         req.params.id,
-        req.user?.userId || (() => { throw new Error('User ID is required'); })(),
-        req.user?.role
+        userId,
+        userRole
       );
 
       if (!deleted) {
@@ -97,8 +129,9 @@ export class ProductController {
     } catch (error: any) {
       if (error.message === 'Unauthorized') {
         res.status(403).json({ success: false, message: error.message });
-        return;
+        return
       }
+
       next(error);
     }
   }

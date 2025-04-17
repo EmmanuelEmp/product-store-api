@@ -1,4 +1,6 @@
-// src/validation/product.validation.ts
+
+
+// Product validation schema using Joi
 import Joi from 'joi';
 
 export const productSchema = Joi.object({
