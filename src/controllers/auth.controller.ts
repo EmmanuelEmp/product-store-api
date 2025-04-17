@@ -10,7 +10,6 @@ const authService = new AuthService();
 export class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('Register controller called with body:', req.body); // Debug log
       if (!req.body.name || !req.body.email || !req.body.password) {
         const error = new Error('Name, email, and password are required');
         (error as any).status = 400;
@@ -18,7 +17,6 @@ export class AuthController {
       }
 
       const user = await authService.register(req.body) as IUser;
-      console.log('Register: User created:', user); // Debug log
       if (!user || !user._id) {
         const error = new Error('Failed to create user');
         (error as any).status = 500;

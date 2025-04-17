@@ -20,7 +20,7 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(mongoUri);
 
     // Log successful connection
-    logger.info(`DB Connected: ${conn.connection.host}`);
+    logger.info('DB Connected');
     
   } catch (error) {
     // Log error details
