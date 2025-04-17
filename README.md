@@ -46,6 +46,8 @@ Read: https://github.com/goldbergyoni/javascript-testing-best-practices
 👨‍💻 Author
 ---
 Name: Ochogwu Emmanuel
+---
 GitHub: @EmmanuelEmp
+---
 LinkedIn: https://www.linkedin.com/in/emmanuel-ochogwu
 
