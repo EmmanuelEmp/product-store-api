@@ -35,7 +35,7 @@ export class AuthController {
         data: { user: { id: user._id, email: user.email }, accessToken, refreshToken },
       });
     } catch (error) {
-      console.log('Register controller error:', error); // Debug log
+      console.log('Register controller error:', error);
       logger.error(`Register controller error: ${(error as Error).message}`);
       next(error);
     }
@@ -43,7 +43,7 @@ export class AuthController {
 
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('Login controller called with body:', req.body); // Debug log
+      console.log('Login controller called with body:', req.body); 
       if (!req.body.email || !req.body.password) {
         const error = new Error('Email and password are required');
         (error as any).status = 400;
@@ -51,7 +51,7 @@ export class AuthController {
       }
 
       const tokens = await authService.login(req.body.email, req.body.password);
-      console.log('Login: Tokens received:', tokens); // Debug log
+      console.log('Login: Tokens received:', tokens); 
       if (!tokens) {
         const error = new Error('Login failed');
         (error as any).status = 500;
@@ -63,7 +63,7 @@ export class AuthController {
         data: { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken },
       });
     } catch (error) {
-      console.log('Login controller error:', error); // Debug log
+      console.log('Login controller error:', error); 
       logger.error(`Login controller error: ${(error as Error).message}`);
       next(error);
     }
@@ -71,14 +71,13 @@ export class AuthController {
 
   async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('GetProfile controller called with user:', req.user); // Debug log
       if (!req.user) {
         const error = new Error('User information is missing');
         (error as any).status = 400;
         throw error;
       }
       const user = await authService.getUserById(req.user.userId);
-      console.log('GetProfile: User retrieved:', user); // Debug log
+      // console.log('GetProfile: User retrieved:', user); 
       if (!user) {
         const error = new Error('User not found');
         (error as any).status = 404;
@@ -89,7 +88,7 @@ export class AuthController {
         data: { user },
       });
     } catch (error) {
-      console.log('GetProfile controller error:', error); // Debug log
+      // console.log('GetProfile controller error:', error); // Debug log
       logger.error(`Get profile error: ${(error as Error).message}`);
       next(error);
     }
@@ -97,7 +96,6 @@ export class AuthController {
 
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('Logout controller called with body:', req.body); // Debug log
       const { refreshToken } = req.body;
 
       if (!refreshToken) {
@@ -118,7 +116,7 @@ export class AuthController {
 
       res.status(200).json({ message: 'Logout successful' });
     } catch (error) {
-      console.log('Logout controller error:', error); // Debug log
+      console.log('Logout controller error:', error);
       logger.error(`Logout controller error: ${(error as Error).message}`);
       next(error);
     }
@@ -126,7 +124,6 @@ export class AuthController {
 
   async refreshToken(req: Request, res: Response, next: NextFunction) {
     try {
-      console.log('RefreshToken controller called with body:', req.body); // Debug log
       const { refreshToken } = req.body;
       if (!refreshToken) {
         logger.error('Refresh token required');
@@ -135,8 +132,7 @@ export class AuthController {
         throw error;
       }
 
-      const tokens = await authService.refreshToken(refreshToken);
-      console.log('RefreshToken: Tokens received:', tokens); // Debug log
+      const tokens = await authService.refreshToken(refreshToken)
       if (!tokens) {
         logger.error('Invalid refresh token');
         const error = new Error('Invalid refresh token');
@@ -146,7 +142,7 @@ export class AuthController {
       logger.info('Token refreshed successfully');
       res.status(200).json({ message: 'Token refreshed', data: tokens });
     } catch (error) {
-      console.log('RefreshToken controller error:', error); // Debug log
+      console.log('RefreshToken controller error:', error);
       logger.error(`Refresh token error: ${(error as Error).message}`);
       next(error);
     }
