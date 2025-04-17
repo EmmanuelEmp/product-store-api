@@ -43,7 +43,8 @@ npm start          # Runs compiled app from build/
 #Make sure Docker is installed, then run:
 docker-compose up --build
 
-
+# For best test practices
+Read: https://github.com/goldbergyoni/javascript-testing-best-practices
 
 👨‍💻 Author
 Your Ochogwu Emmanuel
