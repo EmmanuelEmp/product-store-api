@@ -26,13 +26,20 @@ export class ProductController {
     }
   }
 
-  // Get all products
+  // Get all products with pagination
   async getAllProducts(req: Request, res: Response, next: NextFunction) {
     try {
-      const products = await productService.getAllProducts();
+      const page = parseInt(req.query.page as string) || 1;  // Default to page 1
+      const limit = parseInt(req.query.limit as string) || 10;  // Default to 10 items per page
+
+      const { products, total } = await productService.getPaginatedProducts(page, limit);
+
       res.status(200).json({
         success: true,
         count: products.length,
+        total,
+        page,
+        pages: Math.ceil(total / limit),
         data: products,
       });
     } catch (error) {

@@ -13,6 +13,26 @@ class ProductService {
   }
 
   /**
+   * Retrieves paginated products, populated with the creator's info.
+   * @param {number} page - The page number.
+   * @param {number} limit - The number of products per page.
+   * @returns {Promise<{ products: IProduct[], total: number }>} - A paginated list of products.
+   */
+  async getPaginatedProducts(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    
+    // Get paginated products and total count
+    const products = await Product.find()
+      .skip(skip)
+      .limit(limit)
+      .populate('createdBy', 'name email');
+      
+    const total = await Product.countDocuments();
+    
+    return { products, total };
+  }
+
+  /**
    * Retrieves all products, populated with the creator's info.
    * @returns {Promise<IProduct[]>} - List of all products.
    */

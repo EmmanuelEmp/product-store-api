@@ -21,3 +21,4 @@ EXPOSE 3000
 
 # Step 7: Run the application
 CMD ["npm", "run", "start"]
+
