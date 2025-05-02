@@ -6,7 +6,6 @@ dotenv.config();
 
 export const connectDB = async () => {
   try {
-    // Check if MONGO_URI is defined
     const mongoUri = process.env.MONGO_URI;
     if (!mongoUri) {
       logger.error('MongoDB URI is missing. Please check your .env file.');
